@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Práctica (para la clase)</title>
+        <style>
+            *{ margin:0; padding:0; }
+            body{ text-align: center; font-family: Helvetica, Arial, sans-serif; }
+            h1 { padding:1vh 15vw; }
+            h2, p{ padding:.5vh 0; }
+            header, article, footer{ padding:5vh 0; }
+            header, article{ border-bottom:1px dotted black; }
+            div{ padding:2vh 6vw; }
+        </style>
+    </head>
+    <body>
+        <header>
+            <h1>Tufte refers to data-ink as the non-erasable ink used for the presentation of data</h1>
+        </header>
+        <main>
+            <article>
+                <h2>Evolución demográfica de Chile desde 1907</h2>
+                <p>Con una <a href="https://datavizcatalogue.com/ES/metodos/grafica_de_linea.html" target="_blank">gráfica de línea</a></p>
+                <div>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 570 210">
+                        <g transform="translate(0,195) scale(1,-1)" id="lineas"><!--aquí dentro va la polyline--></g>
+                        <g id="years"><!--aquí dentro van los textos con los años--></g>
+                    </svg>
+                </div>
+            </article>
+            <article>
+                <h2>Asistencia de hinchas el estadio en el torneo nacional 2024 según equipo</h2>
+                <p>Con una <a href="https://datavizcatalogue.com/ES/metodos/graficos_de_barras.html" target="_blank">gráfica de barras</a></p>
+                <div>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 100" id="barras"><!--aquí dentro van los grupos con rectangulo y textos--></svg>
+                </div> 
+            </article>
+        </main>
+        <footer>
+            <p><small>Revisar lo de Data-Ink Ratio en <a href="https://infovis-wiki.net/wiki/Data-Ink_Ratio" target="_blank">infovis</a></small></p>
+        </footer>
+        <script>
+            //PRIMERA GRÁFICA
+
+            // Datos de https://es.wikipedia.org/wiki/Anexo:Crecimiento_poblacional_de_Santiago_de_Chile
+
+            const lineal = {
+                censos: [1907, 1920, 1930, 1940, 1952, 1960, 1970, 1982,1992, 2002, 2012, 2017 ],
+                censados: [3231022, 3730235, 4287445, 5023539, 5932995, 7374115, 8884768, 11329736, 13348401, 15116435, 16572475, 17574003],
+            };
+
+            const graficaLineas = document.querySelector("#lineas");
+
+            let coordenadas = "";
+
+            let momentos = ""
+
+            // la manera de despliegue de las coordenadas del Eje Y nos exige un ajuste, que copiamos de https://stackoverflow.com/questions/39560206/change-0-0-from-svg
+
+            lineal.censados.forEach((d, i) => {
+                coordenadas += ((i*50)+7) + "," + Math.round(d*0.000009) + " ";
+                momentos += `<text x="${i*50}" y="205" font-size="6">${lineal.censos[i]}</text> `;
+
+            })
+
+            console.log(coordenadas);
+
+            console.log(momentos);
+
+            graficaLineas.innerHTML += `<polyline points="${coordenadas}" fill="none" stroke="blue" stroke-width="0.7"/>`;
+
+            document.querySelector("#years").innerHTML += momentos;
+
+
+            // SEGUNDA GRÁFICA 
+
+            // Datos de https://es.wikipedia.org/wiki/Anexo:Regiones_de_Chile_por_poblaci%C3%B3n
+
+            const barras = [
+                    {region:"Universidad de Chile", numero:548999},
+                    {region:"Colo Colo", numero:405497},
+                    {region:"Universidad Católica", numero:136776},
+                    {region:"Deportes Iquique", numero:135231},
+                    {region:"Coquimbo Unido", numero:90703},
+                    {region:"O'Higgins", numero:83414},
+                    {region:"Cobreloa", numero:81469},
+                    {region:"Everton", numero:77423},
+                    {region:"Ñublense", numero:73379},
+                    {region:"Unión Española", numero:61655}
+                ]
+
+            const graficaBarras = document.querySelector("#barras");
+
+            barras.forEach((d, i) => {
+                graficaBarras.innerHTML += `<g transform="translate(0,${i*15})">
+                    <rect x="0" y="0" width="${d.numero/2000}" height="10" fill="blue"/>
+                    <text x="3" y="7" fill="white" font-size="5">${d.region}</text>
+                    <text x="${(d.numero/2000)+3}" y="7" font-size="6">${new Intl.NumberFormat("es-ES").format(d.numero)} hinchas</text>
+                </g>`
+            });
+        </script>
+    </body>
+</html>
